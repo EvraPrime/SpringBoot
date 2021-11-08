@@ -4,13 +4,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-@Transactional
+@Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRED, readOnly = false, timeout = 30)
 public class StudentService {
     
     private final StudentRepository studentRepository;
@@ -25,9 +27,9 @@ public class StudentService {
 	}
 
     public void addNewStudent(Student student) {
-        Optional<Student> studenOptional = studentRepository.findStudentByEmail(student.getEmail());
+        Optional<Student> studentOptional = studentRepository.findStudentByEmail(student.getEmail());
 
-        if (studenOptional.isPresent()) {
+        if (studentOptional.isPresent()) {
             throw new IllegalStateException("email taken");
         }
 
