@@ -1,0 +1,33 @@
+<html>
+<head>
+    <title>Home Page</title>
+    <style>
+        table, th, td {
+          border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+<h1>Hello !</h1>
+<p>Welcome to <span th:text="${appName}">Our App</span></p>
+<table>
+    <tr>
+        <th scope="col"> ID </th>
+        <th scope="col"> Name </th>
+        <th scope="col"> Email </th>
+        <th scope="col"> Date of Birth </th>
+        <th scope="col"> Age </th>
+    </tr>
+	<tr th:if="${students.empty}">
+        <td colspan="3"> No Students Available </td>
+    </tr>
+    <tr th:each="student : ${students}">
+        <td><span th:text="${student.getId()}"> ID </span></td>
+        <td><span th:text="${student.getName()}"> Name </span></td>
+        <td><span th:text="${student.getEmail()}"> Email </span></td>
+        <td><span th:text="${student.getDob()}"> Dob </span></td>
+        <td><span th:text="${student.getAge()}"> Age </span></td>
+    </tr>
+</table>
+</body>
+</html>
