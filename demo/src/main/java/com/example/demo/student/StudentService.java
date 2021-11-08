@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Transactional
 public class StudentService {
     
     private final StudentRepository studentRepository;
@@ -43,7 +44,6 @@ public class StudentService {
         studentRepository.deleteById(studentId);
     }
 
-    @Transactional
     public void updateStudent(Long studentId, String name, String email) {
         Student student = studentRepository.findById(studentId)
                         .orElseThrow(() -> new IllegalStateException(
@@ -62,5 +62,7 @@ public class StudentService {
 
             student.setEmail(email);
         }
+
+        
     }
 }
