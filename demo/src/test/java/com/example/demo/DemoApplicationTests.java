@@ -61,7 +61,7 @@ class DemoApplicationTests {
 		  .body(student)
 		  .post(API_ROOT);
 		
-		assertEquals(HttpStatus.OK.value(), response.getStatusCode());
+		assertEquals(HttpStatus.CREATED.value(), response.getStatusCode());
 	}
 
 	@Test
@@ -73,6 +73,6 @@ class DemoApplicationTests {
 		assertEquals(HttpStatus.OK.value(), response.getStatusCode());
 
 		response = RestAssured.get(location);
-		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatusCode());
+		assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatusCode());
 	}
 }

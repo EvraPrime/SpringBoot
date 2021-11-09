@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
+
+import com.example.demo.error.StudentNotFoundException;
 
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -51,7 +51,7 @@ public class StudentService {
         boolean exists = studentRepository.existsById(studentId);
         
         if (!exists) {
-            throw new IllegalStateException("student with id " + studentId + " doesn't exists");
+            throw new StudentNotFoundException();
         }
 
         studentRepository.deleteById(studentId);
@@ -59,8 +59,7 @@ public class StudentService {
 
     public void updateStudent(Long studentId, String name, String email) {
         Student student = studentRepository.findById(studentId)
-                        .orElseThrow(() -> new IllegalStateException(
-                            "student with id " + studentId + " doesn't exists"));
+                        .orElseThrow(StudentNotFoundException::new);
         
         if (name != null && name.length() > 0 && !Objects.equals(student.getName(), name)) {
             student.setName(name);
@@ -79,7 +78,7 @@ public class StudentService {
 
     public List<Student> getStudentById(Long studentId) {
         List<Student> sList = new ArrayList<>();
-        sList.add(studentRepository.findById(studentId).orElseThrow());
+        sList.add(studentRepository.findById(studentId).orElseThrow(StudentNotFoundException::new));
         return sList;
     }
 }

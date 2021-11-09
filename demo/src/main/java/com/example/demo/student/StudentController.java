@@ -1,10 +1,8 @@
 package com.example.demo.student;
 
-import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,10 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import io.restassured.RestAssured;
-import io.restassured.response.Response;
-
-import java.time.LocalDate;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Controller
 @RequestMapping(path = "api/v1/student")
@@ -39,7 +34,7 @@ public class StudentController {
         model.addAttribute("appName", appName);
         model.addAttribute("students", studentService.getStudent());
 
-        String root = "http://localhost:8080/api/v1/student";
+//        String root = "http://localhost:8080/api/v1/student";
 
 //        new Thread(() -> {
 //            Student student = new Student();
@@ -66,6 +61,7 @@ public class StudentController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public String registerNewStudent(@RequestBody Student student, Model model) throws InterruptedException{
         studentService.addNewStudent(student);
         model.addAttribute("appName", appName);
