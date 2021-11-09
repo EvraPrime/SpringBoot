@@ -7,6 +7,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
 
+import javax.tools.DocumentationTool.Location;
+
 import com.example.demo.student.Student;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -28,51 +30,49 @@ class DemoApplicationTests {
         Student student = new Student();
         student.setName(RandomStringUtils.randomAlphabetic(10));
         student.setEmail(RandomStringUtils.randomAlphabetic(15));
-        student.setDob(LocalDate.of(random.nextInt(2000) + 1000, random.nextInt(12) + 1, random.nextInt(28) + 1));
+        student.setDob(LocalDate.of(random.nextInt(121) + 1900, random.nextInt(12) + 1, random.nextInt(28) + 1));
         return student;
     }
 
     private String createStudentAsUri(Student student) {
-        Response response = RestAssured.given()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(student)
-            .post(API_ROOT);
-        return API_ROOT + "/" + response.jsonPath().get("id");
-    }
+		return API_ROOT + "/" + 1;
+	}
 
 	@Test
-	public void whenGetAllBooks_thenOK() {
+	public void whenGetAllStudents_thenOK() {
 		Response response = RestAssured.get(API_ROOT);
 		assertEquals(HttpStatus.OK.value(), response.getStatusCode());
 	}
 	
 	@Test
-	public void whenGetBooksByTitle_thenOK() {
+	public void whenGetStudentsById_thenOK() {
 		Student student = createRandomStudent();
-		createStudentAsUri(student);
-		Response response = RestAssured.get(
-		  API_ROOT + "/name/" + student.getName());
+		String location = createStudentAsUri(student);
+		Response response = RestAssured.get(location);
 		
 		assertEquals(HttpStatus.OK.value(), response.getStatusCode());
-		assertTrue(response.as(List.class)
-		  .size() > 0);
 	}
-	// @Test
-	// public void whenGetCreatedBookById_thenOK() {
-	// 	Book book = createRandomBook();
-	// 	String location = createBookAsUri(book);
-	// 	Response response = RestAssured.get(location);
-		
-	// 	assertEquals(HttpStatus.OK.value(), response.getStatusCode());
-	// 	assertEquals(book.getTitle(), response.jsonPath()
-	// 	  .get("title"));
-	// }
-	
-	// @Test
-	// public void whenGetNotExistBookById_thenNotFound() {
-	// 	Response response = RestAssured.get(API_ROOT + "/" + randomNumeric(4));
-		
-	// 	assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatusCode());
-	// }
 
+	@Test
+	public void whenCreateNewBook_thenOK() {
+		Student student = createRandomStudent();
+		Response response = RestAssured.given()
+		  .contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
+		  .body(student)
+		  .post(API_ROOT);
+		
+		assertEquals(HttpStatus.OK.value(), response.getStatusCode());
+	}
+
+	@Test
+	public void whenDeleteCreatedBook_thenOk() {
+		Student student = createRandomStudent();
+		String location = createStudentAsUri(student);
+		Response response = RestAssured.delete(location);
+		
+		assertEquals(HttpStatus.OK.value(), response.getStatusCode());
+
+		response = RestAssured.get(location);
+		assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatusCode());
+	}
 }

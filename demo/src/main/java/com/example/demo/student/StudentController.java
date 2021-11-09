@@ -1,5 +1,7 @@
 package com.example.demo.student;
 
+import com.fasterxml.jackson.annotation.JsonCreator.Mode;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -34,21 +36,38 @@ public class StudentController {
         return "home";
     }
 
+    @GetMapping("/{studentId}")
+    public String getStudentById(@PathVariable("studentId") Long studentId, Model model) {
+        model.addAttribute("appName", appName);
+        model.addAttribute("students", studentService.getStudentById(studentId));
+        return "home";
+    }
+
     @PostMapping
-    public void registerNewStudent(@RequestBody Student student) {
+    public String registerNewStudent(@RequestBody Student student, Model model) {
         studentService.addNewStudent(student);
+        model.addAttribute("appName", appName);
+        model.addAttribute("students", studentService.getStudent());
+        return "home";
     }
 
     @DeleteMapping(path = "{studentId}")
-    public void deleteStudent(@PathVariable("studentId") Long studentId) {
+    public String deleteStudent(@PathVariable("studentId") Long studentId, Model model) {
         studentService.deleteStudent(studentId);
+        model.addAttribute("appName", appName);
+        model.addAttribute("students", studentService.getStudent());
+        return "home";
     }
 
     @PutMapping(path = "{studentId}")
-    public void updateStudent(
+    public String updateStudent(
             @PathVariable("studentId") Long studentId,
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) String email) {
+            @RequestParam(required = false) String email,
+            Model model) {
         studentService.updateStudent(studentId, name, email);
+        model.addAttribute("appName", appName);
+        model.addAttribute("students", studentService.getStudent());
+        return "home";
     }
 }
