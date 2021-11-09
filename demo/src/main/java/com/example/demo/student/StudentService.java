@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -14,7 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
-@Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRED, readOnly = false, timeout = 30)
+@Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRED, timeout = 30)
 public class StudentService {
     
     private final StudentRepository studentRepository;
@@ -24,8 +25,9 @@ public class StudentService {
         this.studentRepository = studentRepository;
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ, readOnly = true, timeout = 15)
     public List<Student> getStudent() {
-		return studentRepository.findAll();
+        return studentRepository.findAll();
 	}
 
     public void addNewStudent(Student student) {
@@ -34,6 +36,13 @@ public class StudentService {
         if (studentOptional.isPresent()) {
             throw new IllegalStateException("email taken");
         }
+
+//        try {
+//            TimeUnit.SECONDS.sleep(5);
+//        }
+//        catch (InterruptedException e) {
+//            Thread.currentThread().interrupt();
+//        }
 
         studentRepository.save(student);
     }
