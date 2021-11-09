@@ -9,9 +9,15 @@ import java.util.Random;
 
 import com.example.demo.student.Student;
 
+import com.example.demo.student.StudentRepository;
+import com.example.demo.student.StudentService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -22,6 +28,7 @@ import io.restassured.response.Response;
 class DemoApplicationTests {
     private static final String API_ROOT
     = "http://localhost:8080/api/v1/student";
+
 
     private Student createRandomStudent() {
 		Random random = new Random();
@@ -41,13 +48,13 @@ class DemoApplicationTests {
     }
 
 	@Test
-	public void whenGetAllBooks_thenOK() {
+	public void whenGetAllStudentsThenOK() {
 		Response response = RestAssured.get(API_ROOT);
 		assertEquals(HttpStatus.OK.value(), response.getStatusCode());
 	}
 	
 	@Test
-	public void whenGetBooksByTitle_thenOK() {
+	public void whenCreateStudentThenOK() {
 		Student student = createRandomStudent();
 		createStudentAsUri(student);
 		Response response = RestAssured.get(
@@ -57,6 +64,18 @@ class DemoApplicationTests {
 		assertTrue(response.as(List.class)
 		  .size() > 0);
 	}
+
+	@Test
+	public void MultipleGetRequestsShouldWork() {
+		new Thread(() -> {
+			Response response = RestAssured.get(API_ROOT);
+		}).start();
+		new Thread(() -> {
+			Student student = createRandomStudent();
+			createStudentAsUri(student);
+		}).start();
+	}
+
 	// @Test
 	// public void whenGetCreatedBookById_thenOK() {
 	// 	Book book = createRandomBook();
